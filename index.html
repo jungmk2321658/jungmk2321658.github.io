@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>행복한 우리집 가계부</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f2f2f7; margin: 0; padding: 15px; color: #1c1c1e; }
+        .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        h2 { font-size: 1.1rem; margin-top: 0; color: #007aff; }
+        input, select, button { width: 100%; padding: 14px; margin: 6px 0; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #007aff; }
+        button { background: #007aff; color: white; border: none; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        button:active { opacity: 0.7; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 0.5px solid #e5e5ea; }
+        .list-item:last-child { border-bottom: none; }
+        .item-info { display: flex; flex-direction: column; }
+        .item-date { font-size: 0.75rem; color: #8e8e93; }
+        .item-amount { font-weight: 600; color: #ff3b30; }
+        #chart-container { position: relative; height: 200px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>💰 지출 기록</h2>
+        <input type="number" id="amount" placeholder="금액 입력 (원)" inputmode="numeric">
+        <input type="text" id="desc" placeholder="내용 (예: 편의점, 마트)">
+        <select id="category">
+            <option value="식비">🍴 식비</option>
+            <option value="교통/차량">🚗 교통/차량</option>
+            <option value="생활용품">🧻 생활용품</option>
+            <option value="문화/취미">🎨 문화/취미</option>
+            <option value="기타">✨ 기타</option>
+        </select>
+        <button onclick="saveData()">기록하기</button>
+    </div>
+
+    <div class="card">
+        <h2>📊 카테고리 통계</h2>
+        <div id="chart-container">
+            <canvas id="expenseChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📝 최근 내역</h2>
+        <div id="history">데이터를 불러오는 중...</div>
+    </div>
+
+    <script>
+        // 민경님의 Firebase 설정 정보 적용
+        const firebaseConfig = {
+            apiKey: "AIzaSyDiejhnA5ia62mzZK6N8h5xNHFRh1bdgMY",
+            authDomain: "happy-house-45097.firebaseapp.com",
+            projectId: "happy-house-45097",
+            storageBucket: "happy-house-45097.firebasestorage.app",
+            messagingSenderId: "867224947518",
+            appId: "1:867224947518:web:1f02203819710aad657a6f",
+            databaseURL: "https://happy-house-45097-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function saveData() {
+            const amount = document.getElementById('amount').value;
+            const desc = document.getElementById('desc').value;
+            const category = document.getElementById('category').value;
+
+            if(!amount || !desc) return alert("내용을 입력해주세요!");
+
+            const newEntry = {
+                date: new Date().toLocaleDateString('ko-KR', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}),
+                amount: parseInt(amount),
+                desc: desc,
+                category: category
+            };
+
+            database.ref('expenses').push(newEntry);
+            document.getElementById('amount').value = '';
+            document.getElementById('desc').value = '';
+        }
+
+        let chart;
+        database.ref('expenses').limitToLast(30).on('value', (snapshot) => {
+            const data = snapshot.val();
+            const historyDiv = document.getElementById('history');
+            historyDiv.innerHTML = '';
+            
+            let stats = {};
+            if (data) {
+                Object.values(data).reverse().forEach(item => {
+                    historyDiv.innerHTML += `
+                        <div class="list-item">
+                            <div class="item-info">
+                                <span>${item.desc}</span>
+                                <span class="item-date">${item.date} | ${item.category}</span>
+                            </div>
+                            <span class="item-amount">${item.amount.toLocaleString()}원</span>
+                        </div>`;
+                    stats[item.category] = (stats[item.category] || 0) + item.amount;
+                });
+                updateChart(stats);
+            } else {
+                historyDiv.innerHTML = '내역이 없습니다.';
+            }
+        });
+
+        function updateChart(stats) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            if(chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(stats),
+                    datasets: [{
+                        data: Object.values(stats),
+                        backgroundColor: ['#ff3b30', '#007aff', '#ffcc00', '#34c759', '#5856d6']
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+        }
+    </script>
+</body>
+</html>
