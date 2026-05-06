@@ -22,7 +22,17 @@
         .btn.active.income { background: var(--success); border-color: var(--success); }
         .btn.active.expense { background: var(--danger); border-color: var(--danger); }
         
-        input, select { width: 100%; padding: 12px; border: 1px solid #e5e5ea; border-radius: 10px; margin-top: 5px; font-size: 15px; background: #f9f9fb; box-sizing: border-box; }
+        input, select { 
+    width: 100% !important; 
+    padding: 12px; 
+    border: 1px solid #e5e5ea; 
+    border-radius: 10px; 
+    margin-top: 5px; 
+    font-size: 15px; 
+    background: #f9f9fb; 
+    box-sizing: border-box !important; 
+    -webkit-appearance: none; /* 아이폰 전용 스타일을 초기화해서 튀어나오는 걸 막아줍니다 */
+}
         
         /* 한 줄 입력을 위한 스타일 */
         .inline-group { display: flex; gap: 5px; margin-top: 5px; }
