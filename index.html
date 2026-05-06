@@ -11,48 +11,37 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); padding-bottom: 50px; }
         .card { background: white; border-radius: 18px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 12px; }
         .budget-box { background: linear-gradient(135deg, #2c2c2e, #1c1c1e); color: white; border-radius: 18px; padding: 20px; margin-bottom: 12px; }
-        .grid-asset { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .asset-card { background: white; border-radius: 14px; padding: 12px 5px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-        .asset-title { font-size: 0.7rem; color: #8e8e93; margin-bottom: 4px; }
-        .asset-val { font-size: 0.85rem; font-weight: 700; }
-        
         .flex-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
         .btn { flex: 1; min-width: 70px; padding: 10px 5px; border: 1.5px solid #e5e5ea; border-radius: 10px; background: white; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .btn.active.income { background: var(--success); border-color: var(--success); }
         .btn.active.expense { background: var(--danger); border-color: var(--danger); }
-        
-        input, select { 
-    width: 100% !important; 
-    padding: 12px; 
-    border: 1px solid #e5e5ea; 
-    border-radius: 10px; 
-    margin-top: 5px; 
-    font-size: 15px; 
-    background: #f9f9fb; 
-    box-sizing: border-box !important; 
-    -webkit-appearance: none; /* 아이폰 전용 스타일을 초기화해서 튀어나오는 걸 막아줍니다 */
-}
-        
-        /* 한 줄 입력을 위한 스타일 */
+        .one-line-row .btn { padding: 10px 2px; font-size: 0.75rem; min-width: 0; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #e5e5ea; border-radius: 10px; margin-top: 5px; font-size: 15px; background: #f9f9fb; box-sizing: border-box; -webkit-appearance: none; }
         .inline-group { display: flex; gap: 5px; margin-top: 5px; }
-        .inline-group select { width: 30%; margin-top: 0; }
-        .inline-group input#amt { width: 35%; margin-top: 0; }
-        .inline-group input#memo { width: 35%; margin-top: 0; }
-
+        .inline-group input { flex: 1; width: 0; min-width: 0; margin-top: 0; }
         .item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f2f2f7; transition: all 0.3s; }
         .item.settled { opacity: 0.35; background: #f9f9fb; border-radius: 8px; padding: 0 8px; margin: 0 -8px; }
         .item.settled strong { text-decoration: line-through; }
-        
-        .info-container { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-        .action-container { display: flex; align-items: center; gap: 12px; text-align: right; }
-        
-        .custom-check { width: 22px; height: 22px; cursor: pointer; accent-color: var(--success); margin: 0; }
-        
+        .info-container { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-right: 10px; }
+        .action-container { display: flex; align-items: center; gap: 12px; flex-shrink: 0; text-align: right; }
+        .custom-check { width: 22px !important; height: 22px !important; min-width: 22px !important; min-height: 22px !important; cursor: pointer; accent-color: var(--success); margin: 0 !important; -webkit-appearance: checkbox !important; appearance: checkbox !important; }
         .plus { color: var(--success); }
         .minus { color: var(--danger); }
-        .edit-btn { background: none; border: none; color: var(--primary); font-size: 0.75rem; cursor: pointer; padding: 5px; }
+        .edit-btn { background: none; border: none; color: var(--primary); font-size: 0.75rem; cursor: pointer; padding: 5px 5px 5px 0; }
         .delete-btn { background: none; border: none; color: var(--danger); font-size: 0.75rem; cursor: pointer; padding: 5px; }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .tab-group { display: flex; background: #f2f2f7; border-radius: 8px; padding: 2px; }
+        .tab-btn { border: none; background: none; padding: 5px 12px; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer; color: #8e8e93; }
+        .tab-btn.active { background: white; color: var(--text); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; margin-bottom: 15px; }
+        .stat-table th { text-align: left; padding: 8px; border-bottom: 2px solid #f2f2f7; color: #8e8e93; font-size: 0.7rem; }
+        .stat-table td { padding: 10px 8px; border-bottom: 1px solid #f2f2f7; overflow: hidden; text-overflow: ellipsis; }
+        .stat-table .amt-cell { text-align: right; font-weight: 600; }
+        .budget-input { width: 100%; border: 1px solid #e5e5ea; border-radius: 6px; padding: 4px; font-size: 0.75rem; text-align: right; background: #fff; margin: 0; }
+        .remain-plus { color: var(--success); font-weight: 700; }
+        .remain-minus { color: var(--danger); font-weight: 700; }
+        .stat-title { font-size: 0.85rem; font-weight: 700; color: #8e8e93; margin: 15px 0 8px 5px; }
     </style>
 </head>
 <body>
@@ -66,12 +55,6 @@
     </div>
 </div>
 
-<div class="grid-asset">
-    <div class="asset-card"><div class="asset-title">🚨 예비비</div><div id="tesla-val" class="asset-val" style="color:var(--purple)">0원</div></div>
-    <div class="asset-card"><div class="asset-title">👩‍❤️‍👨 쀼통장</div><div id="couple-val" class="asset-val" style="color:var(--primary)">0원</div></div>
-    <div class="asset-card"><div class="asset-title">🎉 경조사</div><div id="event-val" class="asset-val" style="color:var(--secondary)">0원</div></div>
-</div>
-
 <div class="card">
     <h3 style="margin-top:0;">💰 내역 기록</h3>
     <div style="margin-bottom: 10px;">
@@ -79,16 +62,17 @@
         <input type="date" id="entry-date">
     </div>
 
-    <div class="flex-row">
-        <button class="btn inout income" id="btn-income" onclick="setInout('income')">수입 (+)</button>
-        <button class="btn inout expense active" id="btn-expense" onclick="setInout('expense')">지출 (-)</button>
-    </div>
-    <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-    
-    <div class="flex-row">
-        <button class="btn method active" data-val="신용카드" onclick="setVal('method','신용카드')">신용카드</button>
-        <button class="btn method" data-val="체크카드" onclick="setVal('method','체크카드')">체크카드</button>
-        <button class="btn method" data-val="현금" onclick="setVal('method','현금')">현금</button>
+    <div class="flex-row one-line-row" style="display: flex; gap: 4px; margin-bottom: 10px; align-items: center;">
+        <div style="flex: 1; display: flex; gap: 4px;">
+            <button class="btn inout income" id="btn-income" onclick="setInout('income')">수입(+)</button>
+            <button class="btn inout expense active" id="btn-expense" onclick="setInout('expense')">지출(-)</button>
+        </div>
+        <div style="width: 1px; height: 20px; background: #e5e5ea;"></div>
+        <div id="method-container" style="flex: 2; display: flex; gap: 4px;">
+            <button class="btn method active" data-val="신용카드" onclick="setVal('method','신용카드')">신용카드</button>
+            <button class="btn method" data-val="체크카드" onclick="setVal('method','체크카드')">체크카드</button>
+            <button class="btn method" data-val="현금" onclick="setVal('method','현금')">현금</button>
+        </div>
     </div>
 
     <div class="flex-row">
@@ -102,20 +86,40 @@
         <button class="btn type active" id="t-common" onclick="updateType('common')">같이 생활해요</button>
     </div>
 
-    <!-- 카테고리 (중분류/소분류) -->
     <div style="display:flex; gap:5px;">
-        <select id="mid" onchange="updateSub()"></select>
-        <select id="sub"></select>
+        <select id="mid" onchange="updateSub()" style="flex:1;"></select>
+        <select id="sub" style="flex:1;"></select>
     </div>
 
-    <!-- 한 줄로 정렬된 금액과 메모 구역 -->
     <div class="inline-group">
-        <input type="number" id="amt" placeholder="금액" inputmode="numeric">
+        <input type="text" id="amt" placeholder="금액" inputmode="numeric" oninput="formatMoney(this)">
         <input type="text" id="memo" placeholder="메모">
     </div>
 
     <button id="save-btn" onclick="saveData()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:700; margin-top:10px;">기록 완료</button>
     <button id="cancel-edit" onclick="resetForm()" style="display:none; width:100%; background:none; border:none; color:#8e8e93; margin-top:10px;">수정 취소</button>
+</div>
+
+<div class="card">
+    <div class="stat-header">
+        <h3 style="margin:0; font-size:1rem;">📊 항목별 통계</h3>
+        <div class="tab-group">
+            <button class="tab-btn active" id="tab-month" onclick="setStatMode('month')">이번 달</button>
+            <button class="tab-btn" id="tab-all" onclick="setStatMode('all')">전체</button>
+        </div>
+    </div>
+    
+    <div class="stat-title">📉 지출 내역</div>
+    <table class="stat-table">
+        <thead id="stat-head-expense"></thead>
+        <tbody id="stat-body-expense"></tbody>
+    </table>
+
+    <div class="stat-title">📈 수입 내역</div>
+    <table class="stat-table" style="margin-bottom:0;">
+        <thead id="stat-head-income"></thead>
+        <tbody id="stat-body-income"></tbody>
+    </table>
 </div>
 
 <div class="card">
@@ -138,37 +142,60 @@
             '활동': ['점심비', '적금']
         },
         common: { 
-            '식사': ['식비', '외식비'], 
-            '운영': ['용돈', '예비비(데이트)', '경조사', '목적'],
+            '식비': ['식비', '외식비'], 
+            '운영': ['용돈', '관리비', '예비비(데이트)', '경조사', '목적'],
             '이동/구독': ['교통비', '하이패스비', '정기구독'],
             '투자': ['주식']
         },
         income: { '수입': ['수입'] }
     };
 
-    let state = { method: '신용카드', payer: '공용카드', type: 'common', inout: 'expense', editId: null };
+    let state = { method: '신용카드', payer: '공용카드', type: 'common', inout: 'expense', editId: null, statMode: 'month' };
     let rawData = {};
+    let budgets = JSON.parse(localStorage.getItem('categoryBudgets') || '{}');
+
+    function setStatMode(mode) {
+        state.statMode = mode;
+        document.getElementById('tab-month').classList.toggle('active', mode === 'month');
+        document.getElementById('tab-all').classList.toggle('active', mode === 'all');
+        renderData();
+    }
+
+    function saveBudget(cat, val) {
+        budgets[cat] = parseInt(val.replace(/[^0-9]/g, "")) || 0;
+        localStorage.setItem('categoryBudgets', JSON.stringify(budgets));
+        renderData();
+    }
 
     function setToday() {
         const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        document.getElementById('entry-date').value = `${year}-${month}-${day}`;
+        document.getElementById('entry-date').value = now.toISOString().split('T')[0];
+    }
+
+    function formatMoney(obj) {
+        let val = obj.value.replace(/[^0-9]/g, "");
+        if(val.length > 0) obj.value = parseInt(val).toLocaleString();
+        else obj.value = "";
     }
 
     function setInout(v) {
         state.inout = v;
         document.getElementById('btn-income').classList.toggle('active', v === 'income');
         document.getElementById('btn-expense').classList.toggle('active', v === 'expense');
+        const methodCon = document.getElementById('method-container');
+        if (v === 'income') {
+            methodCon.innerHTML = `<button class="btn method active" data-val="입금" style="flex:1;" onclick="setVal('method','입금')">입금</button>`;
+            state.method = '입금';
+        } else {
+            methodCon.innerHTML = `<button class="btn method active" data-val="신용카드" style="flex:1;" onclick="setVal('method','신용카드')">신용카드</button><button class="btn method" data-val="체크카드" style="flex:1;" onclick="setVal('method','체크카드')">체크카드</button><button class="btn method" data-val="현금" style="flex:1;" onclick="setVal('method','현금')">현금</button>`;
+            state.method = '신용카드';
+        }
         renderCategory();
     }
 
     function setVal(k, v) { 
         state[k] = v; 
-        document.querySelectorAll(`.btn.${k}`).forEach(b => {
-            b.classList.toggle('active', b.getAttribute('data-val') === v);
-        }); 
+        document.querySelectorAll(`.btn.${k}`).forEach(b => b.classList.toggle('active', b.getAttribute('data-val') === v)); 
     }
     
     function updateType(t) {
@@ -196,14 +223,11 @@
     }
 
     function saveData() {
-        const amtInput = document.getElementById('amt').value;
+        const amtRaw = document.getElementById('amt').value.replace(/,/g, "");
         const dateInput = document.getElementById('entry-date').value;
-        if(!amtInput) return alert("금액을 입력하세요!");
-        
-        let finalAmt = parseInt(amtInput);
+        if(!amtRaw) return alert("금액을 입력하세요!");
+        let finalAmt = parseInt(amtRaw);
         if(state.inout === 'expense') finalAmt = -Math.abs(finalAmt);
-        else finalAmt = Math.abs(finalAmt);
-
         const data = {
             method: state.method, payer: state.payer, type: state.type,
             category: document.getElementById('sub').value,
@@ -211,7 +235,6 @@
             settled: false, 
             date: new Date(dateInput).toISOString()
         };
-
         if(state.editId) db.ref('expenses/' + state.editId).update(data);
         else db.ref('expenses').push(data);
         resetForm();
@@ -220,8 +243,7 @@
     function editItem(id) {
         const i = rawData[id];
         state.editId = id;
-        const editDate = new Date(i.date);
-        document.getElementById('entry-date').value = editDate.toISOString().split('T')[0];
+        document.getElementById('entry-date').value = new Date(i.date).toISOString().split('T')[0];
         setInout(i.amount >= 0 ? 'income' : 'expense');
         setVal('method', i.method || '신용카드');
         setVal('payer', i.payer);
@@ -231,7 +253,7 @@
         document.getElementById('mid').value = midCategory;
         updateSub();
         document.getElementById('sub').value = i.category;
-        document.getElementById('amt').value = Math.abs(i.amount);
+        document.getElementById('amt').value = Math.abs(i.amount).toLocaleString();
         document.getElementById('memo').value = i.memo;
         document.getElementById('save-btn').innerText = "수정 완료";
         document.getElementById('cancel-edit').style.display = "block";
@@ -239,70 +261,74 @@
     }
 
     function resetForm() { 
-        state.editId = null; 
-        setToday(); 
-        setVal('method', '신용카드');
-        document.getElementById('amt').value = ''; 
-        document.getElementById('memo').value = ''; 
+        state.editId = null; setToday(); setInout('expense');
+        document.getElementById('amt').value = ''; document.getElementById('memo').value = ''; 
         document.getElementById('save-btn').innerText = "기록 완료"; 
         document.getElementById('cancel-edit').style.display = "none"; 
     }
 
     function deleteItem(id) { if(confirm("삭제할까요?")) db.ref('expenses/' + id).remove(); }
 
-    db.ref('expenses').on('value', snap => {
-        rawData = snap.val() || {};
-        let totalIncome = 0, totalSpent = 0, tesla = 0, couple = 0, event = 0;
-        let html = '';
+    function renderData() {
+        let totalIncome = 0, totalSpent = 0;
+        let expenseStats = {}, incomeStats = {}, html = '';
         const now = new Date();
-
         Object.keys(rawData).sort((a,b) => new Date(rawData[b].date) - new Date(rawData[a].date)).forEach(id => {
             const i = rawData[id];
             const d = new Date(i.date);
-            
-            if(i.type === 'common' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+            const isThisMonth = d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            if(i.type === 'common' && isThisMonth) {
                 if(i.amount >= 0) totalIncome += i.amount;
                 else totalSpent += Math.abs(i.amount);
             }
-            
-            if(i.category === '주식' || i.category === '목적') tesla += i.amount;
-            if(i.category === '예비비(데이트)') couple += i.amount;
-            if(i.category === '경조사') event += i.amount;
-
-            const displayDate = `${d.getMonth()+1}/${d.getDate()}`;
-            const methodTag = i.method ? ` · ${i.method}` : '';
-
+            const isTarget = state.statMode === 'all' || isThisMonth;
+            if(isTarget) {
+                if(i.amount < 0) expenseStats[i.category] = (expenseStats[i.category] || 0) + Math.abs(i.amount);
+                else incomeStats[i.category] = (incomeStats[i.category] || 0) + i.amount;
+            }
             html += `<div class="item ${i.settled ? 'settled' : ''}">
                 <div class="info-container">
                     <div style="display: flex; align-items: baseline; gap: 8px;">
-                        <span style="font-size:0.95rem; font-weight: 700; color:var(--text);">${displayDate}</span>
-                        <strong style="font-size:0.95rem;">${i.memo}</strong>
+                        <span style="font-size:0.95rem; font-weight: 700;">${d.getMonth()+1}/${d.getDate()}</span>
+                        <strong style="font-size:0.95rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${i.memo}</strong>
                     </div>
-                    <small style="color:#8e8e93; font-size:0.75rem; margin-top: 2px;">${i.category} · ${i.payer}${methodTag}</small>
-                    <div style="margin-top: 4px;">
-                        <button class="edit-btn" onclick="editItem('${id}')">수정</button>
-                        <button class="delete-btn" onclick="deleteItem('${id}')">삭제</button>
-                    </div>
+                    <small style="color:#8e8e93; font-size:0.75rem;">${i.category} · ${i.payer} · ${i.method || ''}</small>
+                    <div style="margin-top:4px;"><button class="edit-btn" onclick="editItem('${id}')">수정</button><button class="delete-btn" onclick="deleteItem('${id}')">삭제</button></div>
                 </div>
                 <div class="action-container">
-                    <strong class="${i.amount >= 0 ? 'plus' : 'minus'}" style="font-size:1rem;">
-                        ${i.amount >= 0 ? '+' : ''}${i.amount.toLocaleString()}원
-                    </strong>
+                    <strong class="${i.amount >= 0 ? 'plus' : 'minus'}" style="font-size:1rem;">${i.amount.toLocaleString()}원</strong>
                     <input type="checkbox" class="custom-check" ${i.settled ? 'checked' : ''} onchange="toggleSettle('${id}', ${i.settled})">
                 </div>
             </div>`;
         });
-        document.getElementById('history-list').innerHTML = html || "내역이 없습니다.";
+        let exHead = '', exBody = '';
+        if(state.statMode === 'month') {
+            exHead = '<tr><th width="25%">소분류</th><th width="30%">예산</th><th width="22%">지출</th><th width="23%">남음</th></tr>';
+            Object.keys(expenseStats).sort((a,b) => expenseStats[b] - expenseStats[a]).forEach(cat => {
+                const spent = expenseStats[cat], budget = budgets[cat] || 0, remain = budget - spent;
+                exBody += `<tr><td>${cat}</td><td><input type="text" class="budget-input" value="${budget.toLocaleString()}" onchange="saveBudget('${cat}', this.value)" oninput="formatMoney(this)"></td><td class="amt-cell">${spent.toLocaleString()}</td><td class="amt-cell ${remain >= 0 ? 'remain-plus' : 'remain-minus'}">${remain.toLocaleString()}</td></tr>`;
+            });
+        } else {
+            exHead = '<tr><th>소분류</th><th style="text-align:right;">총 지출 금액</th></tr>';
+            Object.keys(expenseStats).sort((a,b) => expenseStats[b] - expenseStats[a]).forEach(cat => {
+                exBody += `<tr><td>${cat}</td><td class="amt-cell">${expenseStats[cat].toLocaleString()}원</td></tr>`;
+            });
+        }
+        document.getElementById('stat-head-expense').innerHTML = exHead;
+        document.getElementById('stat-body-expense').innerHTML = exBody || '<tr><td colspan="4" style="text-align:center; padding:15px; color:#8e8e93;">지출 없음</td></tr>';
+        let inHead = '<tr><th>소분류</th><th style="text-align:right;">수입 금액</th></tr>', inBody = '';
+        Object.keys(incomeStats).sort((a,b) => incomeStats[b] - incomeStats[a]).forEach(cat => {
+            inBody += `<tr><td>${cat}</td><td class="amt-cell plus">${incomeStats[cat].toLocaleString()}원</td></tr>`;
+        });
+        document.getElementById('stat-head-income').innerHTML = inHead;
+        document.getElementById('stat-body-income').innerHTML = inBody || '<tr><td colspan="2" style="text-align:center; padding:15px; color:#8e8e93;">수입 없음</td></tr>';
+        document.getElementById('history-list').innerHTML = html || "내역 없음";
         document.getElementById('remain-budget').innerText = (totalIncome - totalSpent).toLocaleString() + "원";
         document.getElementById('income-label').innerText = "총 수입: " + totalIncome.toLocaleString() + "원";
         document.getElementById('spent-label').innerText = "총 지출: " + totalSpent.toLocaleString() + "원";
-        document.getElementById('tesla-val').innerText = tesla.toLocaleString() + "원";
-        document.getElementById('couple-val').innerText = couple.toLocaleString() + "원";
-        document.getElementById('event-val').innerText = event.toLocaleString() + "원";
-    });
-
-    setToday();
-    renderCategory();
+    }
+    db.ref('expenses').on('value', snap => { rawData = snap.val() || {}; renderData(); });
+    setToday(); renderCategory();
 </script>
 </body>
 </html>
