@@ -3,128 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>행복한 우리집 가계부</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>민경&수영 스마트 가계부</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f2f2f7; margin: 0; padding: 15px; color: #1c1c1e; }
-        .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        h2 { font-size: 1.1rem; margin-top: 0; color: #007aff; }
-        input, select, button { width: 100%; padding: 14px; margin: 6px 0; border: 1px solid #d1d1d6; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: #007aff; }
-        button { background: #007aff; color: white; border: none; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-        button:active { opacity: 0.7; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 0.5px solid #e5e5ea; }
-        .list-item:last-child { border-bottom: none; }
-        .item-info { display: flex; flex-direction: column; }
-        .item-date { font-size: 0.75rem; color: #8e8e93; }
-        .item-amount { font-weight: 600; color: #ff3b30; }
-        #chart-container { position: relative; height: 200px; width: 100%; }
+        :root { --primary: #007aff; --secondary: #ff9500; --bg: #f2f2f7; --text: #1c1c1e; --success: #34c759; --danger: #ff3b30; --purple: #af52de; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: var(--text); padding-bottom: 50px; }
+        .card { background: white; border-radius: 18px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 12px; }
+        .budget-box { background: linear-gradient(135deg, #2c2c2e, #1c1c1e); color: white; border-radius: 18px; padding: 20px; margin-bottom: 12px; }
+        .grid-asset { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .asset-card { background: white; border-radius: 14px; padding: 12px 5px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .asset-title { font-size: 0.7rem; color: #8e8e93; margin-bottom: 4px; }
+        .asset-val { font-size: 0.85rem; font-weight: 700; }
+        
+        .flex-row { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+        .btn { flex: 1; min-width: 70px; padding: 10px 5px; border: 1.5px solid #e5e5ea; border-radius: 10px; background: white; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn.active.income { background: var(--success); border-color: var(--success); }
+        .btn.active.expense { background: var(--danger); border-color: var(--danger); }
+        
+        input, select { width: 100%; padding: 12px; border: 1px solid #e5e5ea; border-radius: 10px; margin-top: 5px; font-size: 15px; background: #f9f9fb; box-sizing: border-box; }
+        
+        /* 한 줄 입력을 위한 스타일 */
+        .inline-group { display: flex; gap: 5px; margin-top: 5px; }
+        .inline-group select { width: 30%; margin-top: 0; }
+        .inline-group input#amt { width: 35%; margin-top: 0; }
+        .inline-group input#memo { width: 35%; margin-top: 0; }
+
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f2f2f7; transition: all 0.3s; }
+        .item.settled { opacity: 0.35; background: #f9f9fb; border-radius: 8px; padding: 0 8px; margin: 0 -8px; }
+        .item.settled strong { text-decoration: line-through; }
+        
+        .info-container { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .action-container { display: flex; align-items: center; gap: 12px; text-align: right; }
+        
+        .custom-check { width: 22px; height: 22px; cursor: pointer; accent-color: var(--success); margin: 0; }
+        
+        .plus { color: var(--success); }
+        .minus { color: var(--danger); }
+        .edit-btn { background: none; border: none; color: var(--primary); font-size: 0.75rem; cursor: pointer; padding: 5px; }
+        .delete-btn { background: none; border: none; color: var(--danger); font-size: 0.75rem; cursor: pointer; padding: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>💰 지출 기록</h2>
-        <input type="number" id="amount" placeholder="금액 입력 (원)" inputmode="numeric">
-        <input type="text" id="desc" placeholder="내용 (예: 편의점, 마트)">
-        <select id="category">
-            <option value="식비">🍴 식비</option>
-            <option value="교통/차량">🚗 교통/차량</option>
-            <option value="생활용품">🧻 생활용품</option>
-            <option value="문화/취미">🎨 문화/취미</option>
-            <option value="기타">✨ 기타</option>
-        </select>
-        <button onclick="saveData()">기록하기</button>
+<div class="budget-box">
+    <div style="font-size: 0.8rem; opacity: 0.7;">2026년 5월 공동 생활비 잔액</div>
+    <div id="remain-budget" style="font-size: 1.7rem; font-weight: 800; margin: 5px 0;">0원</div>
+    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-top:10px;">
+        <span id="income-label">총 수입: 0원</span>
+        <span id="spent-label">총 지출: 0원</span>
+    </div>
+</div>
+
+<div class="grid-asset">
+    <div class="asset-card"><div class="asset-title">🚨 예비비</div><div id="tesla-val" class="asset-val" style="color:var(--purple)">0원</div></div>
+    <div class="asset-card"><div class="asset-title">👩‍❤️‍👨 쀼통장</div><div id="couple-val" class="asset-val" style="color:var(--primary)">0원</div></div>
+    <div class="asset-card"><div class="asset-title">🎉 경조사</div><div id="event-val" class="asset-val" style="color:var(--secondary)">0원</div></div>
+</div>
+
+<div class="card">
+    <h3 style="margin-top:0;">💰 내역 기록</h3>
+    <div style="margin-bottom: 10px;">
+        <label style="font-size: 0.75rem; color: #8e8e93; margin-left: 5px;">지출/수입 날짜</label>
+        <input type="date" id="entry-date">
     </div>
 
-    <div class="card">
-        <h2>📊 카테고리 통계</h2>
-        <div id="chart-container">
-            <canvas id="expenseChart"></canvas>
-        </div>
+    <div class="flex-row">
+        <button class="btn inout income" id="btn-income" onclick="setInout('income')">수입 (+)</button>
+        <button class="btn inout expense active" id="btn-expense" onclick="setInout('expense')">지출 (-)</button>
+    </div>
+    <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+    
+    <div class="flex-row">
+        <button class="btn method active" data-val="신용카드" onclick="setVal('method','신용카드')">신용카드</button>
+        <button class="btn method" data-val="체크카드" onclick="setVal('method','체크카드')">체크카드</button>
+        <button class="btn method" data-val="현금" onclick="setVal('method','현금')">현금</button>
     </div>
 
-    <div class="card">
-        <h2>📝 최근 내역</h2>
-        <div id="history">데이터를 불러오는 중...</div>
+    <div class="flex-row">
+        <button class="btn payer" data-val="민경" onclick="setVal('payer','민경')">민경</button>
+        <button class="btn payer" data-val="수영" onclick="setVal('payer','수영')">수영</button>
+        <button class="btn payer active" data-val="공용카드" onclick="setVal('payer','공용카드')">💳 공용카드</button>
     </div>
 
-    <script>
-        // 민경님의 Firebase 설정 정보 적용
-        const firebaseConfig = {
-            apiKey: "AIzaSyDiejhnA5ia62mzZK6N8h5xNHFRh1bdgMY",
-            authDomain: "happy-house-45097.firebaseapp.com",
-            projectId: "happy-house-45097",
-            storageBucket: "happy-house-45097.firebasestorage.app",
-            messagingSenderId: "867224947518",
-            appId: "1:867224947518:web:1f02203819710aad657a6f",
-            databaseURL: "https://happy-house-45097-default-rtdb.asia-southeast1.firebasedatabase.app"
+    <div class="flex-row">
+        <button class="btn type" id="t-personal" onclick="updateType('personal')">먼저 냈어요</button>
+        <button class="btn type active" id="t-common" onclick="updateType('common')">같이 생활해요</button>
+    </div>
+
+    <!-- 카테고리 (중분류/소분류) -->
+    <div style="display:flex; gap:5px;">
+        <select id="mid" onchange="updateSub()"></select>
+        <select id="sub"></select>
+    </div>
+
+    <!-- 한 줄로 정렬된 금액과 메모 구역 -->
+    <div class="inline-group">
+        <input type="number" id="amt" placeholder="금액" inputmode="numeric">
+        <input type="text" id="memo" placeholder="메모">
+    </div>
+
+    <button id="save-btn" onclick="saveData()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:700; margin-top:10px;">기록 완료</button>
+    <button id="cancel-edit" onclick="resetForm()" style="display:none; width:100%; background:none; border:none; color:#8e8e93; margin-top:10px;">수정 취소</button>
+</div>
+
+<div class="card">
+    <h3 style="display:flex; justify-content:space-between; align-items:center;">
+        📝 전체 내역
+        <span style="font-size:0.65rem; font-weight:normal; color:#8e8e93;">정산 완료 체크</span>
+    </h3>
+    <div id="history-list">로딩 중...</div>
+</div>
+
+<script>
+    const firebaseConfig = { databaseURL: "https://happy-house-45097-default-rtdb.asia-southeast1.firebasedatabase.app" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const menu = {
+        personal: { 
+            '금융': ['대출', '연금저축비', '주택청약'], 
+            '고정비': ['보험', '계비', '통신비'],
+            '활동': ['점심비', '적금']
+        },
+        common: { 
+            '식사': ['식비', '외식비'], 
+            '운영': ['용돈', '예비비(데이트)', '경조사', '목적'],
+            '이동/구독': ['교통비', '하이패스비', '정기구독'],
+            '투자': ['주식']
+        },
+        income: { '수입': ['수입'] }
+    };
+
+    let state = { method: '신용카드', payer: '공용카드', type: 'common', inout: 'expense', editId: null };
+    let rawData = {};
+
+    function setToday() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        document.getElementById('entry-date').value = `${year}-${month}-${day}`;
+    }
+
+    function setInout(v) {
+        state.inout = v;
+        document.getElementById('btn-income').classList.toggle('active', v === 'income');
+        document.getElementById('btn-expense').classList.toggle('active', v === 'expense');
+        renderCategory();
+    }
+
+    function setVal(k, v) { 
+        state[k] = v; 
+        document.querySelectorAll(`.btn.${k}`).forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-val') === v);
+        }); 
+    }
+    
+    function updateType(t) {
+        state.type = t;
+        document.getElementById('t-personal').classList.toggle('active', t === 'personal');
+        document.getElementById('t-common').classList.toggle('active', t === 'common');
+        if(t === 'common') setVal('payer', '공용카드');
+        renderCategory();
+    }
+
+    function renderCategory() {
+        const targetMenu = state.inout === 'income' ? menu.income : menu[state.type];
+        document.getElementById('mid').innerHTML = Object.keys(targetMenu).map(m => `<option value="${m}">${m}</option>`).join('');
+        updateSub();
+    }
+
+    function updateSub() {
+        const mid = document.getElementById('mid').value;
+        const targetMenu = state.inout === 'income' ? menu.income : menu[state.type];
+        document.getElementById('sub').innerHTML = targetMenu[mid].map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    function toggleSettle(id, currentStatus) {
+        db.ref('expenses/' + id).update({ settled: !currentStatus });
+    }
+
+    function saveData() {
+        const amtInput = document.getElementById('amt').value;
+        const dateInput = document.getElementById('entry-date').value;
+        if(!amtInput) return alert("금액을 입력하세요!");
+        
+        let finalAmt = parseInt(amtInput);
+        if(state.inout === 'expense') finalAmt = -Math.abs(finalAmt);
+        else finalAmt = Math.abs(finalAmt);
+
+        const data = {
+            method: state.method, payer: state.payer, type: state.type,
+            category: document.getElementById('sub').value,
+            amount: finalAmt, memo: document.getElementById('memo').value || "-",
+            settled: false, 
+            date: new Date(dateInput).toISOString()
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        if(state.editId) db.ref('expenses/' + state.editId).update(data);
+        else db.ref('expenses').push(data);
+        resetForm();
+    }
 
-        function saveData() {
-            const amount = document.getElementById('amount').value;
-            const desc = document.getElementById('desc').value;
-            const category = document.getElementById('category').value;
+    function editItem(id) {
+        const i = rawData[id];
+        state.editId = id;
+        const editDate = new Date(i.date);
+        document.getElementById('entry-date').value = editDate.toISOString().split('T')[0];
+        setInout(i.amount >= 0 ? 'income' : 'expense');
+        setVal('method', i.method || '신용카드');
+        setVal('payer', i.payer);
+        updateType(i.type);
+        const targetMenu = i.amount >= 0 ? menu.income : menu[i.type];
+        const midCategory = Object.keys(targetMenu).find(key => targetMenu[key].includes(i.category));
+        document.getElementById('mid').value = midCategory;
+        updateSub();
+        document.getElementById('sub').value = i.category;
+        document.getElementById('amt').value = Math.abs(i.amount);
+        document.getElementById('memo').value = i.memo;
+        document.getElementById('save-btn').innerText = "수정 완료";
+        document.getElementById('cancel-edit').style.display = "block";
+        window.scrollTo(0,0);
+    }
 
-            if(!amount || !desc) return alert("내용을 입력해주세요!");
+    function resetForm() { 
+        state.editId = null; 
+        setToday(); 
+        setVal('method', '신용카드');
+        document.getElementById('amt').value = ''; 
+        document.getElementById('memo').value = ''; 
+        document.getElementById('save-btn').innerText = "기록 완료"; 
+        document.getElementById('cancel-edit').style.display = "none"; 
+    }
 
-            const newEntry = {
-                date: new Date().toLocaleDateString('ko-KR', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}),
-                amount: parseInt(amount),
-                desc: desc,
-                category: category
-            };
+    function deleteItem(id) { if(confirm("삭제할까요?")) db.ref('expenses/' + id).remove(); }
 
-            database.ref('expenses').push(newEntry);
-            document.getElementById('amount').value = '';
-            document.getElementById('desc').value = '';
-        }
+    db.ref('expenses').on('value', snap => {
+        rawData = snap.val() || {};
+        let totalIncome = 0, totalSpent = 0, tesla = 0, couple = 0, event = 0;
+        let html = '';
+        const now = new Date();
 
-        let chart;
-        database.ref('expenses').limitToLast(30).on('value', (snapshot) => {
-            const data = snapshot.val();
-            const historyDiv = document.getElementById('history');
-            historyDiv.innerHTML = '';
+        Object.keys(rawData).sort((a,b) => new Date(rawData[b].date) - new Date(rawData[a].date)).forEach(id => {
+            const i = rawData[id];
+            const d = new Date(i.date);
             
-            let stats = {};
-            if (data) {
-                Object.values(data).reverse().forEach(item => {
-                    historyDiv.innerHTML += `
-                        <div class="list-item">
-                            <div class="item-info">
-                                <span>${item.desc}</span>
-                                <span class="item-date">${item.date} | ${item.category}</span>
-                            </div>
-                            <span class="item-amount">${item.amount.toLocaleString()}원</span>
-                        </div>`;
-                    stats[item.category] = (stats[item.category] || 0) + item.amount;
-                });
-                updateChart(stats);
-            } else {
-                historyDiv.innerHTML = '내역이 없습니다.';
+            if(i.type === 'common' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+                if(i.amount >= 0) totalIncome += i.amount;
+                else totalSpent += Math.abs(i.amount);
             }
-        });
+            
+            if(i.category === '주식' || i.category === '목적') tesla += i.amount;
+            if(i.category === '예비비(데이트)') couple += i.amount;
+            if(i.category === '경조사') event += i.amount;
 
-        function updateChart(stats) {
-            const ctx = document.getElementById('expenseChart').getContext('2d');
-            if(chart) chart.destroy();
-            chart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(stats),
-                    datasets: [{
-                        data: Object.values(stats),
-                        backgroundColor: ['#ff3b30', '#007aff', '#ffcc00', '#34c759', '#5856d6']
-                    }]
-                },
-                options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
-            });
-        }
-    </script>
+            const displayDate = `${d.getMonth()+1}/${d.getDate()}`;
+            const methodTag = i.method ? ` · ${i.method}` : '';
+
+            html += `<div class="item ${i.settled ? 'settled' : ''}">
+                <div class="info-container">
+                    <div style="display: flex; align-items: baseline; gap: 8px;">
+                        <span style="font-size:0.95rem; font-weight: 700; color:var(--text);">${displayDate}</span>
+                        <strong style="font-size:0.95rem;">${i.memo}</strong>
+                    </div>
+                    <small style="color:#8e8e93; font-size:0.75rem; margin-top: 2px;">${i.category} · ${i.payer}${methodTag}</small>
+                    <div style="margin-top: 4px;">
+                        <button class="edit-btn" onclick="editItem('${id}')">수정</button>
+                        <button class="delete-btn" onclick="deleteItem('${id}')">삭제</button>
+                    </div>
+                </div>
+                <div class="action-container">
+                    <strong class="${i.amount >= 0 ? 'plus' : 'minus'}" style="font-size:1rem;">
+                        ${i.amount >= 0 ? '+' : ''}${i.amount.toLocaleString()}원
+                    </strong>
+                    <input type="checkbox" class="custom-check" ${i.settled ? 'checked' : ''} onchange="toggleSettle('${id}', ${i.settled})">
+                </div>
+            </div>`;
+        });
+        document.getElementById('history-list').innerHTML = html || "내역이 없습니다.";
+        document.getElementById('remain-budget').innerText = (totalIncome - totalSpent).toLocaleString() + "원";
+        document.getElementById('income-label').innerText = "총 수입: " + totalIncome.toLocaleString() + "원";
+        document.getElementById('spent-label').innerText = "총 지출: " + totalSpent.toLocaleString() + "원";
+        document.getElementById('tesla-val').innerText = tesla.toLocaleString() + "원";
+        document.getElementById('couple-val').innerText = couple.toLocaleString() + "원";
+        document.getElementById('event-val').innerText = event.toLocaleString() + "원";
+    });
+
+    setToday();
+    renderCategory();
+</script>
 </body>
 </html>
